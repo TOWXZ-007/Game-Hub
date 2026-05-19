@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GameVault — Official Game Hub</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#050810;
+  --card:#111827;
+  --accent:#00f5ff;
+  --accent2:#7c3aed;
+  --text:#e2e8f0;
+  --muted:#64748b;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Rajdhani',sans-serif;
+}
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 40px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:rgba(5,8,16,0.95);
+  backdrop-filter:blur(10px);
+}
+.logo{
+  font-family:'Orbitron',monospace;
+  font-size:22px;
+  font-weight:900;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.search-bar{
+  background:#0d1117;
+  border:1px solid rgba(255,255,255,0.1);
+  padding:8px 15px;
+  border-radius:6px;
+  width:280px;
+}
+.search-bar input{
+  background:none;border:none;outline:none;color:white;width:100%;font-family:'Rajdhani',sans-serif;font-size:15px;
+}
+.hero{
+  text-align:center;
+  padding:50px 20px 30px;
+}
+.hero h1{
+  font-family:'Orbitron',monospace;
+  font-size:clamp(28px,5vw,48px);
+  background:linear-gradient(135deg,#fff,var(--accent));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.hero p{
+  color:var(--muted);
+  margin-top:10px;
+  font-size:16px;
+  letter-spacing:1px;
+}
+.hero-count{
+  margin-top:8px;
+  font-size:13px;
+  color:var(--accent);
+  letter-spacing:2px;
+}
+.filters{
+  padding:20px 40px 0;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.filters-label{
+  color:var(--muted);
+  font-size:12px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-right:4px;
+}
+.filter-btn{
+  padding:7px 15px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:none;
+  color:var(--muted);
+  cursor:pointer;
+  border-radius:5px;
+  font-family:'Rajdhani',sans-serif;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:1px;
+  transition:0.2s;
+}
+.filter-btn.active,
+.filter-btn:hover{
+  border-color:var(--accent);
+  color:var(--accent);
+  background:rgba(0,245,255,0.05);
+}
+.filter-btn[data-src="fitgirl"].active{ border-color:#00f5ff; color:#00f5ff; }
+.filter-btn[data-src="dodi"].active{ border-color:#ff006e; color:#ff006e; border-color:#ff006e; }
+.filter-btn[data-src="elamigos"].active{ border-color:#7c3aed; color:#7c3aed; }
+.filter-btn[data-src="gog"].active{ border-color:#f59e0b; color:#f59e0b; }
+.filter-btn[data-src="steam"].active{ border-color:#1e90ff; color:#1e90ff; }
+
+.genre-filters{
+  padding:12px 40px 20px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.genre-btn{
+  padding:4px 12px;
+  border:1px solid rgba(255,255,255,0.07);
+  background:none;
+  color:var(--muted);
+  cursor:pointer;
+  border-radius:20px;
+  font-family:'Rajdhani',sans-serif;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:1px;
+  transition:0.2s;
+}
+.genre-btn.active,
+.genre-btn:hover{
+  border-color:var(--accent2);
+  color:var(--accent2);
+  background:rgba(124,58,237,0.08);
+}
+
+.grid{
+  padding:10px 40px 60px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:20px;
+}
+.card{
+  background:var(--card);
+  border-radius:10px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.08);
+  transition:transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  display:flex;
+  flex-direction:column;
+}
+.card:hover{
+  transform:translateY(-6px);
+  border-color:var(--accent);
+  box-shadow:0 10px 30px rgba(0,245,255,0.12);
+}
+
+/* Clickable image */
+.card-img-wrap{
+  display:block;
+  overflow:hidden;
+  position:relative;
+}
+.card-img-wrap img{
+  width:100%;
+  height:160px;
+  object-fit:cover;
+  transition:transform 0.4s;
+  display:block;
+}
+.card:hover .card-img-wrap img{
+  transform:scale(1.06);
+}
+.img-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:background 0.3s;
+}
+.card:hover .img-overlay{
+  background:rgba(0,0,0,0.35);
+}
+.img-overlay span{
+  opacity:0;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:2px;
+  color:#fff;
+  background:var(--accent);
+  color:#000;
+  padding:5px 14px;
+  border-radius:4px;
+  transition:opacity 0.3s;
+  text-transform:uppercase;
+  font-family:'Rajdhani',sans-serif;
+}
+.card:hover .img-overlay span{
+  opacity:1;
+}
+
+.src-badge{
+  position:absolute;
+  top:8px;
+  left:8px;
+  padding:2px 8px;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1px;
+  border-radius:3px;
+  text-transform:uppercase;
+}
+.card-body{
+  padding:13px 15px;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+.card-title{
+  font-size:16px;
+  font-weight:600;
+  color:#fff;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.card-meta{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px;
+  display:flex;
+  justify-content:space-between;
+}
+.card-size{
+  color:var(--accent);
+  font-weight:600;
+}
+.btn{
+  margin-top:10px;
+  padding:8px;
+  text-align:center;
+  background:transparent;
+  border:1px solid var(--accent);
+  color:var(--accent);
+  text-decoration:none;
+  border-radius:5px;
+  font-weight:700;
+  font-family:'Rajdhani',sans-serif;
+  font-size:13px;
+  letter-spacing:1px;
+  transition:0.2s;
+}
+.btn:hover{
+  background:var(--accent);
+  color:#000;
+}
+
+.no-results{
+  grid-column:1/-1;
+  text-align:center;
+  padding:60px;
+  color:var(--muted);
+  font-size:18px;
+  letter-spacing:2px;
+}
+
+footer{
+  text-align:center;
+  padding:20px;
+  border-top:1px solid rgba(255,255,255,0.08);
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.8;
+}
+footer a{color:var(--accent);text-decoration:none}
+
+@media(max-width:768px){
+  header{flex-direction:column;gap:15px;padding:15px 20px}
+  .grid{padding:10px 15px 40px}
+  .filters,.genre-filters{padding-left:15px;padding-right:15px}
+  .search-bar{width:100%}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">GAMEVAULT</div>
+  <div class="search-bar">
+    <input type="text" id="search" placeholder="Search games..." oninput="render()">
+  </div>
+</header>
+
+<div class="hero">
+  <h1>Find. Click. Play.</h1>
+  <p>Click any game image to go directly to its download page</p>
+  <div class="hero-count" id="heroCount"></div>
+</div>
+
+<!-- Source Filters -->
+<div class="filters">
+  <span class="filters-label">Source:</span>
+  <button class="filter-btn active" data-src="all" onclick="setSource('all',this)">All</button>
+  <button class="filter-btn" data-src="fitgirl" onclick="setSource('fitgirl',this)" style="border-color:rgba(0,245,255,0.2)">FitGirl Repacks</button>
+  <button class="filter-btn" data-src="dodi" onclick="setSource('dodi',this)" style="border-color:rgba(255,0,110,0.2)">DODI Repacks</button>
+  <button class="filter-btn" data-src="elamigos" onclick="setSource('elamigos',this)" style="border-color:rgba(124,58,237,0.2)">ElAmigos</button>
+  <button class="filter-btn" data-src="gog" onclick="setSource('gog',this)" style="border-color:rgba(245,158,11,0.2)">GOG Games</button>
+  <button class="filter-btn" data-src="steam" onclick="setSource('steam',this)" style="border-color:rgba(30,144,255,0.2)">Steam</button>
+</div>
+
+<!-- Genre Filters -->
+<div class="genre-filters">
+  <span class="filters-label" style="font-size:12px;letter-spacing:2px;color:var(--muted);align-self:center">Genre:</span>
+  <button class="genre-btn active" onclick="setGenre('all',this)">All</button>
+  <button class="genre-btn" onclick="setGenre('action',this)">Action</button>
+  <button class="genre-btn" onclick="setGenre('rpg',this)">RPG</button>
+  <button class="genre-btn" onclick="setGenre('shooter',this)">Shooter</button>
+  <button class="genre-btn" onclick="setGenre('strategy',this)">Strategy</button>
+  <button class="genre-btn" onclick="setGenre('sport',this)">Sports</button>
+  <button class="genre-btn" onclick="setGenre('adventure',this)">Adventure</button>
+  <button class="genre-btn" onclick="setGenre('horror',this)">Horror</button>
+  <button class="genre-btn" onclick="setGenre('simulation',this)">Simulation</button>
+  <button class="genre-btn" onclick="setGenre('fighting',this)">Fighting</button>
+</div>
+
+<div class="grid" id="gameGrid"></div>
+
+<footer>
+  GameVault links only to official repack & store pages. No files are hosted here.<br>
+  <a href="https://fitgirl-repacks.site" target="_blank">fitgirl-repacks.site</a> &nbsp;|&nbsp;
+  <a href="https://dodi-repacks.site" target="_blank">dodi-repacks.site</a> &nbsp;|&nbsp;
+  <a href="https://elamigos-games.net" target="_blank">elamigos-games.net</a> &nbsp;|&nbsp;
+  <a href="https://gog-games.to" target="_blank">gog-games.to</a>
+</footer>
+
+<script>
+
+// Steam CDN header images (the same ones repack sites embed)
+const si = id => `https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/header.jpg`;
+
+// Source color/label config
+const SRC = {
+  fitgirl: { label:'FitGirl', color:'#00f5ff', bg:'rgba(0,245,255,0.15)' },
+  dodi:    { label:'DODI',    color:'#ff006e', bg:'rgba(255,0,110,0.15)' },
+  elamigos:{ label:'ElAmigos',color:'#7c3aed', bg:'rgba(124,58,237,0.15)' },
+  gog:     { label:'GOG',     color:'#f59e0b', bg:'rgba(245,158,11,0.15)' },
+  steam:   { label:'Steam',   color:'#1e90ff', bg:'rgba(30,144,255,0.15)' },
+};
+
+const games = [
+  // ═══════════════════════════════
+  // FITGIRL REPACKS
+  // ═══════════════════════════════
+  { title:"Elden Ring",                source:"fitgirl", genre:"rpg",        size:"46 GB",  image:si(1245620), link:"https://fitgirl-repacks.site/elden-ring/" },
+  { title:"Cyberpunk 2077",            source:"fitgirl", genre:"rpg",        size:"63 GB",  image:si(1091500), link:"https://fitgirl-repacks.site/cyberpunk-2077/" },
+  { title:"Red Dead Redemption 2",     source:"fitgirl", genre:"action",     size:"112 GB", image:si(1174180), link:"https://fitgirl-repacks.site/red-dead-redemption-2/" },
+  { title:"GTA V",                     source:"fitgirl", genre:"action",     size:"72 GB",  image:si(271590),  link:"https://fitgirl-repacks.site/grand-theft-auto-v/" },
+  { title:"The Witcher 3",             source:"fitgirl", genre:"rpg",        size:"67 GB",  image:si(292030),  link:"https://fitgirl-repacks.site/the-witcher-3-wild-hunt-game-of-the-year-edition/" },
+  { title:"Baldur's Gate 3",           source:"fitgirl", genre:"rpg",        size:"122 GB", image:si(1086940), link:"https://fitgirl-repacks.site/baldurs-gate-3/" },
+  { title:"Hogwarts Legacy",           source:"fitgirl", genre:"rpg",        size:"45 GB",  image:si(990080),  link:"https://fitgirl-repacks.site/hogwarts-legacy/" },
+  { title:"Alan Wake 2",               source:"fitgirl", genre:"horror",     size:"90 GB",  image:si(1850570), link:"https://fitgirl-repacks.site/alan-wake-2/" },
+  { title:"Starfield",                 source:"fitgirl", genre:"rpg",        size:"130 GB", image:si(1716740), link:"https://fitgirl-repacks.site/starfield/" },
+  { title:"Forza Horizon 5",           source:"fitgirl", genre:"sport",      size:"110 GB", image:si(1551360), link:"https://fitgirl-repacks.site/forza-horizon-5/" },
+  { title:"Resident Evil 4 Remake",    source:"fitgirl", genre:"horror",     size:"67 GB",  image:si(2050650), link:"https://fitgirl-repacks.site/resident-evil-4/" },
+  { title:"Call of Duty MW3 (2023)",   source:"fitgirl", genre:"shooter",    size:"140 GB", image:si(2519060), link:"https://fitgirl-repacks.site/call-of-duty-modern-warfare-3-2023/" },
+  { title:"Doom Eternal",              source:"fitgirl", genre:"shooter",    size:"42 GB",  image:si(782330),  link:"https://fitgirl-repacks.site/doom-eternal/" },
+  { title:"Sekiro: Shadows Die Twice", source:"fitgirl", genre:"action",     size:"14 GB",  image:si(814380),  link:"https://fitgirl-repacks.site/sekiro-shadows-die-twice/" },
+  { title:"Monster Hunter: World",     source:"fitgirl", genre:"action",     size:"48 GB",  image:si(582010),  link:"https://fitgirl-repacks.site/monster-hunter-world/" },
+  { title:"Dark Souls III",            source:"fitgirl", genre:"action",     size:"22 GB",  image:si(374320),  link:"https://fitgirl-repacks.site/dark-souls-iii/" },
+  { title:"Hades",                     source:"fitgirl", genre:"action",     size:"16 GB",  image:si(1145360), link:"https://fitgirl-repacks.site/hades/" },
+  { title:"Horizon Zero Dawn",         source:"fitgirl", genre:"adventure",  size:"72 GB",  image:si(1151640), link:"https://fitgirl-repacks.site/horizon-zero-dawn-complete-edition/" },
+  { title:"Death Stranding DC",        source:"fitgirl", genre:"adventure",  size:"55 GB",  image:si(1190460), link:"https://fitgirl-repacks.site/death-stranding-directors-cut/" },
+  { title:"God of War",                source:"fitgirl", genre:"action",     size:"34 GB",  image:si(1593500), link:"https://fitgirl-repacks.site/god-of-war/" },
+  { title:"Days Gone",                 source:"fitgirl", genre:"action",     size:"36 GB",  image:si(1259420), link:"https://fitgirl-repacks.site/days-gone/" },
+  { title:"Disco Elysium",             source:"fitgirl", genre:"rpg",        size:"20 GB",  image:si(632470),  link:"https://fitgirl-repacks.site/disco-elysium-the-final-cut/" },
+  { title:"It Takes Two",              source:"fitgirl", genre:"adventure",  size:"40 GB",  image:si(1426210), link:"https://fitgirl-repacks.site/it-takes-two/" },
+  { title:"Hollow Knight",             source:"fitgirl", genre:"adventure",  size:"9 GB",   image:si(367520),  link:"https://fitgirl-repacks.site/hollow-knight/" },
+  { title:"Stardew Valley",            source:"fitgirl", genre:"simulation", size:"1 GB",   image:si(413150),  link:"https://fitgirl-repacks.site/stardew-valley/" },
+  { title:"Total War: Warhammer III",  source:"fitgirl", genre:"strategy",   size:"75 GB",  image:si(1158310), link:"https://fitgirl-repacks.site/total-war-warhammer-iii/" },
+  { title:"Control Ultimate Edition",  source:"fitgirl", genre:"action",     size:"27 GB",  image:si(870780),  link:"https://fitgirl-repacks.site/control-ultimate-edition/" },
+  { title:"Resident Evil Village",     source:"fitgirl", genre:"horror",     size:"29 GB",  image:si(1196590), link:"https://fitgirl-repacks.site/resident-evil-village/" },
+  { title:"No Man's Sky",              source:"fitgirl", genre:"adventure",  size:"15 GB",  image:si(275850),  link:"https://fitgirl-repacks.site/no-mans-sky/" },
+  { title:"Ghostwire: Tokyo",          source:"fitgirl", genre:"action",     size:"19 GB",  image:si(1475810), link:"https://fitgirl-repacks.site/ghostwire-tokyo/" },
+  { title:"The Forest",                source:"fitgirl", genre:"horror",     size:"4 GB",   image:si(242760),  link:"https://fitgirl-repacks.site/the-forest/" },
+  { title:"Subnautica",                source:"fitgirl", genre:"adventure",  size:"8 GB",   image:si(264710),  link:"https://fitgirl-repacks.site/subnautica/" },
+  { title:"XCOM 2",                    source:"fitgirl", genre:"strategy",   size:"30 GB",  image:si(268500),  link:"https://fitgirl-repacks.site/xcom-2/" },
+  { title:"Civilization VI",           source:"fitgirl", genre:"strategy",   size:"17 GB",  image:si(289070),  link:"https://fitgirl-repacks.site/sid-meiers-civilization-vi/" },
+
+  // ═══════════════════════════════
+  // DODI REPACKS
+  // ═══════════════════════════════
+  { title:"Assassin's Creed Mirage",   source:"dodi", genre:"action",     size:"13 GB",  image:si(2073450), link:"https://dodi-repacks.site/assassins-creed-mirage/" },
+  { title:"Marvel's Spider-Man 2",     source:"dodi", genre:"action",     size:"75 GB",  image:si(2522830), link:"https://dodi-repacks.site/marvels-spider-man-2/" },
+  { title:"Cities: Skylines II",       source:"dodi", genre:"simulation", size:"18 GB",  image:si(949230),  link:"https://dodi-repacks.site/cities-skylines-ii/" },
+  { title:"Lies of P",                 source:"dodi", genre:"action",     size:"22 GB",  image:si(1627720), link:"https://dodi-repacks.site/lies-of-p/" },
+  { title:"Mortal Kombat 1",           source:"dodi", genre:"fighting",   size:"78 GB",  image:si(1971870), link:"https://dodi-repacks.site/mortal-kombat-1/" },
+  { title:"EA Sports FC 24",           source:"dodi", genre:"sport",      size:"51 GB",  image:si(2195250), link:"https://dodi-repacks.site/ea-sports-fc-24/" },
+  { title:"Dead Space Remake",         source:"dodi", genre:"horror",     size:"50 GB",  image:si(1693980), link:"https://dodi-repacks.site/dead-space/" },
+  { title:"Wo Long: Fallen Dynasty",   source:"dodi", genre:"action",     size:"19 GB",  image:si(2033220), link:"https://dodi-repacks.site/wo-long-fallen-dynasty/" },
+  { title:"Tekken 8",                  source:"dodi", genre:"fighting",   size:"70 GB",  image:si(1778820), link:"https://dodi-repacks.site/tekken-8/" },
+  { title:"The Last of Us Part I",     source:"dodi", genre:"action",     size:"72 GB",  image:si(1888930), link:"https://dodi-repacks.site/the-last-of-us-part-i/" },
+  { title:"Street Fighter 6",          source:"dodi", genre:"fighting",   size:"46 GB",  image:si(1836980), link:"https://dodi-repacks.site/street-fighter-6/" },
+  { title:"Diablo IV",                 source:"dodi", genre:"rpg",        size:"80 GB",  image:si(2344520), link:"https://dodi-repacks.site/diablo-iv/" },
+  { title:"Remnant 2",                 source:"dodi", genre:"shooter",    size:"40 GB",  image:si(1903340), link:"https://dodi-repacks.site/remnant-2/" },
+  { title:"Like a Dragon: Ishin",      source:"dodi", genre:"action",     size:"30 GB",  image:si(1740930), link:"https://dodi-repacks.site/like-a-dragon-ishin/" },
+  { title:"Avatar: Frontiers",         source:"dodi", genre:"action",     size:"55 GB",  image:si(1877090), link:"https://dodi-repacks.site/avatar-frontiers-of-pandora/" },
+  { title:"Forspoken",                 source:"dodi", genre:"rpg",        size:"60 GB",  image:si(1680060), link:"https://dodi-repacks.site/forspoken/" },
+  { title:"Wild Hearts",               source:"dodi", genre:"action",     size:"39 GB",  image:si(2041270), link:"https://dodi-repacks.site/wild-hearts/" },
+  { title:"Atomic Heart",              source:"dodi", genre:"shooter",    size:"35 GB",  image:si(668580),  link:"https://dodi-repacks.site/atomic-heart/" },
+  { title:"Hogwarts Legacy (DODI)",    source:"dodi", genre:"rpg",        size:"45 GB",  image:si(990080),  link:"https://dodi-repacks.site/hogwarts-legacy/" },
+
+  // ═══════════════════════════════
+  // ElAmigos
+  // ═══════════════════════════════
+  { title:"Mass Effect Legendary",      source:"elamigos", genre:"rpg",        size:"70 GB",  image:si(1328670), link:"https://elamigos-games.net/mass-effect-legendary-edition/" },
+  { title:"Assassin's Creed Valhalla",  source:"elamigos", genre:"action",     size:"43 GB",  image:si(2208920), link:"https://elamigos-games.net/assassins-creed-valhalla/" },
+  { title:"Far Cry 6",                  source:"elamigos", genre:"shooter",    size:"42 GB",  image:si(921690),  link:"https://elamigos-games.net/far-cry-6/" },
+  { title:"F1 23",                      source:"elamigos", genre:"sport",      size:"50 GB",  image:si(2108330), link:"https://elamigos-games.net/f1-23/" },
+  { title:"Football Manager 2024",      source:"elamigos", genre:"sport",      size:"4 GB",   image:si(2252570), link:"https://elamigos-games.net/football-manager-2024/" },
+  { title:"NBA 2K24",                   source:"elamigos", genre:"sport",      size:"135 GB", image:si(2338770), link:"https://elamigos-games.net/nba-2k24/" },
+  { title:"Farming Simulator 22",       source:"elamigos", genre:"simulation", size:"10 GB",  image:si(1248130), link:"https://elamigos-games.net/farming-simulator-22/" },
+  { title:"Euro Truck Simulator 2",     source:"elamigos", genre:"simulation", size:"15 GB",  image:si(227300),  link:"https://elamigos-games.net/euro-truck-simulator-2/" },
+  { title:"Watch Dogs Legion",          source:"elamigos", genre:"action",     size:"55 GB",  image:si(2521460), link:"https://elamigos-games.net/watch-dogs-legion/" },
+  { title:"Immortals Fenyx Rising",     source:"elamigos", genre:"action",     size:"25 GB",  image:si(1330880), link:"https://elamigos-games.net/immortals-fenyx-rising/" },
+  { title:"The Crew 2",                 source:"elamigos", genre:"sport",      size:"35 GB",  image:si(646910),  link:"https://elamigos-games.net/the-crew-2/" },
+  { title:"Tom Clancy's Rainbow Six Siege", source:"elamigos", genre:"shooter", size:"50 GB", image:si(359550), link:"https://elamigos-games.net/tom-clancys-rainbow-six-siege/" },
+
+  // ═══════════════════════════════
+  // GOG Games
+  // ═══════════════════════════════
+  { title:"Divinity: Original Sin 2",  source:"gog", genre:"rpg",       size:"35 GB", image:si(435150),  link:"https://gog-games.to/game/divinity_original_sin_2" },
+  { title:"Pathfinder: WotR",          source:"gog", genre:"rpg",       size:"31 GB", image:si(1184370), link:"https://gog-games.to/game/pathfinder_wrath_of_the_righteous" },
+  { title:"Pillars of Eternity 2",     source:"gog", genre:"rpg",       size:"25 GB", image:si(560130),  link:"https://gog-games.to/game/pillars_of_eternity_2_deadfire" },
+  { title:"Crusader Kings III",        source:"gog", genre:"strategy",  size:"10 GB", image:si(1158310), link:"https://gog-games.to/game/crusader_kings_iii" },
+  { title:"Into the Breach",           source:"gog", genre:"strategy",  size:"1 GB",  image:si(590380),  link:"https://gog-games.to/game/into_the_breach" },
+  { title:"Celeste",                   source:"gog", genre:"adventure", size:"2 GB",  image:si(504230),  link:"https://gog-games.to/game/celeste" },
+  { title:"Ori: Will of the Wisps",    source:"gog", genre:"adventure", size:"12 GB", image:si(1057090), link:"https://gog-games.to/game/ori_and_the_will_of_the_wisps" },
+  { title:"RimWorld",                  source:"gog", genre:"simulation",size:"1 GB",  image:si(294100),  link:"https://gog-games.to/game/rimworld" },
+  { title:"Planescape: Torment EE",    source:"gog", genre:"rpg",       size:"3 GB",  image:si(466300),  link:"https://gog-games.to/game/planescape_torment_enhanced_edition" },
+  { title:"Baldur's Gate 3 (GOG)",     source:"gog", genre:"rpg",       size:"122 GB",image:si(1086940), link:"https://gog-games.to/game/baldurs_gate_3" },
+  { title:"Disco Elysium (GOG)",       source:"gog", genre:"rpg",       size:"20 GB", image:si(632470),  link:"https://gog-games.to/game/disco_elysium_the_final_cut" },
+  { title:"The Witcher 3 (GOG)",       source:"gog", genre:"rpg",       size:"50 GB", image:si(292030),  link:"https://gog-games.to/game/the_witcher_3_wild_hunt_complete_edition" },
+
+  // ═══════════════════════════════
+  // Steam (Official Store)
+  // ═══════════════════════════════
+  { title:"Counter-Strike 2",          source:"steam", genre:"shooter",    size:"35 GB",  image:si(730),     link:"https://store.steampowered.com/app/730/" },
+  { title:"Dota 2",                    source:"steam", genre:"strategy",   size:"25 GB",  image:si(570),     link:"https://store.steampowered.com/app/570/" },
+  { title:"Team Fortress 2",           source:"steam", genre:"shooter",    size:"15 GB",  image:si(440),     link:"https://store.steampowered.com/app/440/" },
+  { title:"Half-Life: Alyx",           source:"steam", genre:"shooter",    size:"67 GB",  image:si(546560),  link:"https://store.steampowered.com/app/546560/" },
+  { title:"Portal 2",                  source:"steam", genre:"adventure",  size:"10 GB",  image:si(620),     link:"https://store.steampowered.com/app/620/" },
+  { title:"Left 4 Dead 2",             source:"steam", genre:"shooter",    size:"13 GB",  image:si(550),     link:"https://store.steampowered.com/app/550/" },
+  { title:"Terraria",                  source:"steam", genre:"adventure",  size:"1 GB",   image:si(105600),  link:"https://store.steampowered.com/app/105600/" },
+  { title:"Rust",                      source:"steam", genre:"action",     size:"20 GB",  image:si(252490),  link:"https://store.steampowered.com/app/252490/" },
+  { title:"Garry's Mod",               source:"steam", genre:"simulation", size:"5 GB",   image:si(4000),    link:"https://store.steampowered.com/app/4000/" },
+  { title:"Warframe",                  source:"steam", genre:"shooter",    size:"55 GB",  image:si(230410),  link:"https://store.steampowered.com/app/230410/" },
+];
+
+let currentSource = "all";
+let currentGenre = "all";
+
+function setSource(source, btn){
+  currentSource = source;
+  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  render();
+}
+
+function setGenre(genre, btn){
+  currentGenre = genre;
+  document.querySelectorAll(".genre-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  render();
+}
+
+function render(){
+  const grid = document.getElementById("gameGrid");
+  const search = document.getElementById("search").value.toLowerCase();
+
+  const filtered = games.filter(g=>{
+    const matchSource = currentSource==="all" || g.source===currentSource;
+    const matchGenre  = currentGenre==="all"  || g.genre===currentGenre;
+    const matchSearch = g.title.toLowerCase().includes(search) || g.genre.includes(search) || g.source.includes(search);
+    return matchSource && matchGenre && matchSearch;
+  });
+
+  document.getElementById("heroCount").textContent = `${filtered.length} GAMES FOUND`;
+
+  if(filtered.length === 0){
+    grid.innerHTML = `<div class="no-results">⊘ No games match your search</div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(g=>{
+    const src = SRC[g.source];
+    return `
+    <div class="card">
+      <a class="card-img-wrap" href="${g.link}" target="_blank" rel="noopener noreferrer">
+        <img src="${g.image}" alt="${g.title}" loading="lazy"
+          onerror="this.src='https://placehold.co/460x215/111827/00f5ff?text=${encodeURIComponent(g.title)}'">
+        <div class="img-overlay"><span>Go to Page ↗</span></div>
+        <div class="src-badge" style="background:${src.bg};color:${src.color}">${src.label}</div>
+      </a>
+      <div class="card-body">
+        <div class="card-title">${g.title}</div>
+        <div class="card-meta">
+          <span>${g.genre.toUpperCase()}</span>
+          <span class="card-size">⬇ ${g.size}</span>
+        </div>
+        <a class="btn" href="${g.link}" target="_blank" rel="noopener noreferrer">Visit Page</a>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+render();
+</script>
+
+</body>
+</html>
